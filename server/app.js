@@ -20,8 +20,10 @@ app.use(cookieParser());
 
 app.use(
   cors({
-    origin: "http://192.168.100.24:3001",
+    origin: "https://milkom-note-app.netlify.app",
+    methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
     credentials: true,
+    allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
 

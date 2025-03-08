@@ -5,8 +5,8 @@ import { useAuthMutations } from "../hooks/useAuthMutations";
 import Spinner from "../common/Spinner";
 
 export default function LoginPage() {
-  const [username, setUsername] = useState("a username");
-  const [password, setPassword] = useState("milosz123");
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
   const location = useLocation();
