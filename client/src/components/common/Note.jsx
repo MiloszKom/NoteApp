@@ -1,26 +1,60 @@
-import React from "react";
-
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-
-import { faPen, faTrash } from "@fortawesome/free-solid-svg-icons";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 
-export default function Note() {
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPen, faTrash } from "@fortawesome/free-solid-svg-icons";
+
+import ConfirmDelete from "./ConfirmDelete";
+import { formatDate, highlightText } from "../utils/helperFunctions";
+
+export default function Note({
+  id,
+  title,
+  content,
+  createdAt,
+  setIsEditing,
+  searchValue,
+}) {
+  const [isDeleting, setIsDeleting] = useState(false);
+
   return (
-    <Link to="/note/123" className="note">
-      <h3 className="note-title no-wrap">Note Title</h3>
-      <p className="note-content no-wrap">
-        This is the content of the note. This is the content of the note.
-      </p>
-      <span className="note-date">March 7, 2025</span>
-      <div className="note-actions">
-        <div className="action">
-          <FontAwesomeIcon icon={faPen} />
+    <>
+      <Link to={`/note/${id}`} className="note">
+        <h3 className="note-title no-wrap">
+          {highlightText(title, searchValue)}
+        </h3>
+        <p className="note-content no-wrap">
+          {highlightText(content, searchValue)}
+        </p>
+        <span className="note-date">{formatDate(createdAt)}</span>
+        <div className="note-actions">
+          <div
+            className="action"
+            onClick={(e) => {
+              e.preventDefault();
+              setIsEditing({
+                id,
+                title,
+                content,
+              });
+            }}
+          >
+            <FontAwesomeIcon icon={faPen} />
+          </div>
+          <div
+            className="action"
+            onClick={(e) => {
+              e.preventDefault();
+              setIsDeleting(id);
+            }}
+          >
+            <FontAwesomeIcon icon={faTrash} />
+          </div>
         </div>
-        <div className="action">
-          <FontAwesomeIcon icon={faTrash} />
-        </div>
-      </div>
-    </Link>
+      </Link>
+      {isDeleting && (
+        <ConfirmDelete noteId={isDeleting} setIsDeleting={setIsDeleting} />
+      )}
+    </>
   );
 }

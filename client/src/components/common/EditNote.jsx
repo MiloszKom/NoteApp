@@ -8,13 +8,13 @@ import { useNotesMutations } from "../hooks/useNotesMutations";
 
 import Spinner from "../common/Spinner";
 
-export default function AddNote() {
-  const [title, setTitle] = useState("");
-  const [content, setContent] = useState("");
+export default function EditNote({ noteData, setIsEditing }) {
+  const [title, setTitle] = useState(noteData.title);
+  const [content, setContent] = useState(noteData.content);
 
-  const { createNoteMutation } = useNotesMutations();
+  const { editNoteMutation } = useNotesMutations();
 
-  const handleSubmit = (e) => {
+  const editNote = (e) => {
     e.preventDefault();
 
     const data = {
@@ -22,7 +22,14 @@ export default function AddNote() {
       content,
     };
 
-    createNoteMutation.mutate(data);
+    editNoteMutation.mutate(
+      { data, noteId: noteData.id },
+      {
+        onSuccess: () => {
+          setIsEditing(false);
+        },
+      }
+    );
   };
 
   return (
@@ -31,9 +38,14 @@ export default function AddNote() {
         <form className="add-note-form">
           <div className="add-note-header">
             <label className="modal-label">TITLE</label>
-            <Link to="/" className="close-btn">
+            <div
+              className="close-btn"
+              onClick={() => {
+                setIsEditing(false);
+              }}
+            >
               <FontAwesomeIcon icon={faXmark} />
-            </Link>
+            </div>
           </div>
           <input
             type="text"
@@ -51,13 +63,19 @@ export default function AddNote() {
           />
           <button
             className={`add-note-btn ${
-              createNoteMutation.isPending ? "disabled" : ""
+              editNoteMutation.isPending ||
+              (title === noteData.title && content === noteData.content)
+                ? "disabled"
+                : ""
             }`}
-            onClick={handleSubmit}
-            disabled={createNoteMutation.isPending}
+            onClick={editNote}
+            disabled={
+              editNoteMutation.isPending ||
+              (title === noteData.title && content === noteData.content)
+            }
             type="submit"
           >
-            {createNoteMutation.isPending ? <Spinner /> : "Add New Note"}
+            {editNoteMutation.isPending ? <Spinner /> : "Edit Note"}
           </button>
         </form>
       </div>

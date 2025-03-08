@@ -1,10 +1,16 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
+import { useAuthMutations } from "../hooks/useAuthMutations";
+
+import Spinner from "../common/Spinner";
+
 export default function SignUpPage() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [passwordConfirm, setPasswordConfirm] = useState("");
   const [error, setError] = useState("");
+
+  const { signUpMutation } = useAuthMutations();
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -15,11 +21,14 @@ export default function SignUpPage() {
     }
 
     setError("");
-    console.log("Signing up with in with:", {
+
+    const data = {
       username,
       password,
       passwordConfirm,
-    });
+    };
+
+    signUpMutation.mutate(data);
   };
 
   return (
@@ -55,8 +64,21 @@ export default function SignUpPage() {
               setPasswordConfirm(e.target.value);
             }}
           />
-          <button type="submit" className="form-button" onClick={handleSubmit}>
-            Sign Up
+          <button
+            type="submit"
+            className={`form-button ${
+              signUpMutation.isPending || signUpMutation.isSuccess
+                ? "disabled"
+                : ""
+            }`}
+            disabled={signUpMutation.isPending || signUpMutation.isSuccess}
+            onClick={handleSubmit}
+          >
+            {signUpMutation.isPending || signUpMutation.isSuccess ? (
+              <Spinner />
+            ) : (
+              "Sign up"
+            )}
           </button>
         </form>
         <div className="form-text">
